@@ -1,12 +1,14 @@
 <template>
   <div>
     <div class="navbar navbar-fixed-top" style="width:100%;background-color: #001a3d; text-align:center" >
-      <h1 class="navbar-brand navbar-brand-name" id="show" style="color: white">QQ Show </h1>
+      <h1 class="navbar-brand navbar-brand-name" id="show" style="color: white">一分钟看懂校园招聘企业与高校的关系</h1>
       <!--<i class="fa fa-square-o"></i><font color="#fff">-->
       <!--<button type="button" id="send_message" @click="sendMessage">发送 message</button>-->
       <!--<button type="button" id="close_websocket" @click = closeConnect>关闭 websocket</button>-->
     </div>
-    <div id="myChart" :style="{width: '1300px', height: '430px',margin:'0 auto'}"></div>
+    <div id="total_dom" :style="{width: '1300px', height: '300px',margin:'20px auto'}">
+    </div>
+    <div id="myChart" :style="{width: '1300px', height: '500px',margin:'0px auto'}"></div>
   </div>
 
 </template>
@@ -29,6 +31,11 @@
       return {
         msg: 'Welcome to Your Vue.js App',
         dataC9:[],
+        totalC9:0,
+        total985:0,
+        total211:0,
+        totalBasic:0,
+        totalTop:0,
         data211:[],
         data985:[],
         dataNomal:[],
@@ -52,6 +59,7 @@
       //观察option的变化
       dataLowNomal:function (newVal, oldVal) {
           this.setoptinManyLin();
+          this.drawBar();
           // console.log("调用了")
       },
     },
@@ -79,22 +87,114 @@
           this.xdata.push(this.timerClock);
         }
       },
+
       drawLine() {
         // 基于准备好的dom，初始化echarts实例
-        this.mychart = this.$echarts.init(document.getElementById('myChart'))
-        this.setoptinManyLin()
+        this.mychart = this.$echarts.init(document.getElementById('myChart'));
+        this.bar_dom = this.$echarts.init(document.getElementById('total_dom'));
+        this.setoptinManyLin();
+        this.drawBar();
       },
+
+      drawBar() {
+          var bar_option =  {
+            color: ['#3398DB'],
+            title: {
+              text: '2017年各类别高校平均校园招聘企业总数排名',
+              textStyle: {
+                  color: '#fff',
+                fontSize: 24,
+              }
+            },
+            tooltip: {
+              trigger: 'axis',
+              axisPointer: {
+                type: 'shadow'
+              },
+              formatter: "{b} <br> 来校企业总数: {c}"
+            },
+            /*legend: {
+             data: [date]
+             },*/
+            grid: {
+              left: '4%',
+              right: '4%',
+              bottom: '2%',
+              containLabel: true
+            },
+            xAxis: {
+              type: 'value',
+              boundaryGap: [0, 10],
+              min: 0,
+              max: 1000,
+              interval: 200,
+              axisLabel: {
+                formatter: '{value}',
+                textStyle: {
+                  color: '#fff',
+                  fontWeight: '80'
+                }
+              },
+              axisLine: {
+                lineStyle: {
+                  color: '#F1F1F3' //坐标轴线线的颜色。
+                }
+              },
+            },
+            yAxis: {
+              type: 'category',
+              data: ['C9高校', '985高校', '211高校', '普通一本', '普通二本'],
+              axisLabel: {
+                show: true,
+                interval: 0,
+                rotate: 0,
+                margin: 10,
+                inside: false,
+                textStyle: {
+                  //color: '#fff',
+                  fontWeight: '50'
+                }
+              },
+              axisLine: {
+                lineStyle: {
+                  color: '#F1F1F3' //坐标轴线线的颜色
+                }
+              },
+            },
+            series: [{
+              type: 'bar',
+              label: {
+                normal: {
+                  show: true,
+                  // formatter: '{c}',
+                  formatter: function(v) {
+                    var val = v.data;
+                    if (val == 0) {
+                      return '';
+                    }
+                    return val;
+                  },
+                  color: '#fff',
+                  position: 'right'
+                }
+              },
+              data: [this.totalC9, this.total985, this.total211, this.totalTop, this.totalBasic]
+            }]
+          };
+          this.bar_dom.setOption(bar_option);
+      },
+
       setoptinManyLin(){
         this.mychart.setOption({
           backgroundColor: '#394056',
           title: {
-            text: '招聘公司数',
+            text: '2017年全国各类别高校校园招聘日均企业数量走势图',
             textStyle: {
               fontWeight: 'normal',
-              fontSize: 16,
+              fontSize: 24,
               color: '#F1F1F3'
             },
-            left: '6%'
+            left: '0%'
           },
           tooltip: {
             trigger: 'axis',
@@ -134,7 +234,7 @@
             boundaryGap: false,
             axisLine: {
               lineStyle: {
-                color: '#57617B'
+                color: '#F1F1F3' //坐标轴线线的颜色。
               }
             },
             data: this.xdata
@@ -163,14 +263,14 @@
           yAxis: [{
             type: 'value',
             name: '单位（个）',
-            max: 350,
+            max: 26,
             min: 0,
             axisTick: {
               show: false
             },
             axisLine: {
               lineStyle: {
-                color: '#57617B'
+                color: '#F1F1F3'
               }
             },
             axisLabel: {
@@ -193,6 +293,7 @@
             symbolSize: 5,
             showSymbol: false,
             lineStyle: {
+              color: '#F1F1F3',
               normal: {
                 width: 1
               }
@@ -227,6 +328,7 @@
             symbolSize: 5,
             showSymbol: false,
             lineStyle: {
+              color: '#F1F1F3',
               normal: {
                 width: 1
               }
@@ -261,6 +363,7 @@
             symbolSize: 5,
             showSymbol: false,
             lineStyle: {
+              color: '#F1F1F3',
               normal: {
                 width: 1
               }
@@ -528,11 +631,16 @@
         var obj =  eval('(' + e.data + ')');
         // console.log(obj.count)
         // this.xdata.push( obj.name);
-        this.data985.push(obj['985']);
-        this.data211.push(obj['211']);
-        this.dataC9.push(obj['c9']);
-        this.dataNomal.push(obj['top']);
-        this.dataLowNomal.push(obj['basic'])
+        this.total985 +=obj['985'];
+        this.total211 +=obj['211'];
+        this.totalC9 += obj['c9'];
+        this.totalTop += obj['top'];
+        this.totalBasic += obj['basic'];
+        this.data985.push(obj['985'].toFixed(2));
+        this.data211.push(obj['211'].toFixed(2));
+        this.dataC9.push(obj['c9'].toFixed(2));
+        this.dataNomal.push(obj['top'].toFixed(2));
+        this.dataLowNomal.push(obj['basic'].toFixed(2));
       },
       connetWebSocket(){
         /*创建socket连接*/
@@ -579,5 +687,15 @@
 <style scoped>
   .test {
 
+  }
+  .total_dom {
+    width: 80%;
+    display: block;
+    margin: 40px auto;
+    border: solid 2px #cfd1d1;
+    border-radius: 5px;
+    height: 50px;
+    font-size: 20px;
+    color: white;
   }
 </style>
