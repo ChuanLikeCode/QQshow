@@ -9,6 +9,7 @@
     <div id="total_dom" :style="{width: '1300px', height: '300px',margin:'20px auto'}">
     </div>
     <div id="myChart" :style="{width: '1300px', height: '500px',margin:'0px auto'}"></div>
+    <div style="margin-left:1100px;margin-top:-420px;color: white;z-index: 1;position:absolute;font-size: 35px">{{ dataTime }}</div>
   </div>
 
 </template>
@@ -30,6 +31,7 @@
     data () {
       return {
         msg: 'Welcome to Your Vue.js App',
+        dataTime:'2017-01-01',
         dataC9: [],
         totalC9: 0,
         total985: 0,
@@ -105,7 +107,7 @@
       }
     },
     mounted(){
-      this.connetWebSocket();
+      // this.connetWebSocket();
       // this.setnumber();
       this.drawLine();
       // this.inputNumber();
@@ -733,6 +735,7 @@
         var obj = eval('(' + e.data + ')');
         // console.log(obj.count)
         // this.xdata.push( obj.name);
+        this.dataTime = obj.date;
         this.total985 += obj['985'];
         this.total211 += obj['211'];
         this.totalC9 += obj['c9'];
