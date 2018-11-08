@@ -3,7 +3,8 @@
     <div class="navbar navbar-fixed-top" style="width:100%;background-color: #001a3d; text-align:center">
       <h1 class="navbar-brand navbar-brand-name" id="show" style="color: white">一分钟看懂你的好友的关系图</h1>
     </div>
-    <div id="myChart" :style="{width: '1000px', height: '900px',margin:'0px auto'}"></div>
+    <div id="myChart" :style="{width: '1300px', height: '1000px',margin:'0px auto'}"></div>
+    <div style="margin-left:1100px;margin-top:-900px;color: white;z-index: 1;position:absolute;font-size: 35px">{{ dataTime }}</div>
   </div>
 </template>
 
@@ -23,10 +24,12 @@
     data () {
       return {
         mychart:"",
+        dataTime:"2017-01",
         nodes:[],
         collectNodesName:{},
         links:[],
-        updateFlag:1
+        updateFlag:1,
+        myColor:["#ffd200","#00eaff","#0866e5","#1d9bff","#29c729","#ff8400",'#e4393c','#e63810','#ff6b00','#e3b61f','#13b5b1']
       }
     },
     watch:{
@@ -35,8 +38,8 @@
       }
     },
     mounted(){
-      this.connetWebSocket();
-      this.draw();
+      // this.connetWebSocket();
+      // this.draw();
       // setInterval(this.inputMessage,1000);
     },
     methods: {
@@ -55,40 +58,9 @@
             }
           ],
           "nodes": this.nodes,
-          //   [//展示的节点
-          //   {
-          //     "name": "刘烨",//节点名称
-          //     "value": 1,
-          //     "category": 0//与关系网类别索引对应，此处只有一个关系网所以这里写0
-          //   },
-          //   {
-          //     "name": "霓娜",
-          //     "value": 50,
-          //     "category": 0
-          //   },
-          //   {
-          //     "name": "诺一",
-          //     "value": 30,
-          //     "category": 0
-          //   }
-          // ],
           "links": this.links
-          //   [//节点之间连接
-          //   {
-          //     "source": 0,//起始节点，0表示第一个节点
-          //     "target": 1 //目标节点，1表示与索引为1的节点进行连接
-          //   },
-          //   {
-          //     "source": 1,
-          //     "target": 2
-          //   },
-          //   {
-          //     "source": 1,
-          //     "target": 2
-          //   }
-          //
-          // ]
         };
+        // var num=Math.floor(Math.random()*11);
         var option = {
           title: {
             text: '好友关系图',
@@ -129,26 +101,33 @@
               edgeLength: 105,//连线的长度
               repulsion: 100  //子节点之间的间距
             },
+
             edges: webkitDep.links
           }]
         };
         this.mychart.setOption(option);
       },
-      setNods(node_name){
+      setNods(node_name,imgurl){
+
         var node = {
           "name": node_name,//节点名称
           "value": 1,
           "category": 0,//与关系网类别索引对应，此处只有一个关系网所以这里写0
-          "symbol": 'image://https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike150%2C5%2C5%2C150%2C50/sign=6b03dae80746f21fdd395601974d0005/cb8065380cd791232b140067a0345982b2b78029.jpg',
-          "symbolSize":50
+          "symbol": 'image://'+imgurl,
+          "symbolSize":30,
           // "symbol": 'image://../images/me.png  src/assets/a.jpg'
         };
         this.nodes.push(node);
       },
       setLinks(source_name,target_name){
+        var num=Math.floor(Math.random()*11);
         var link = {
           "source": this.collectNodesName[source_name],
-          "target": this.collectNodesName[target_name]
+          "target": this.collectNodesName[target_name],
+          "lineStyle": {
+            "color": this.myColor[num],
+            "width":2
+          },
         };
         this.links.push(link)
       },
@@ -158,7 +137,7 @@
           this.setLinks(this.translation(obj.source_name),this.translation(obj.target_name))
         } else {//不存在这个需要连接的node
           this.collectNodesName[this.translation(obj.target_name)] = this.nodes.length;//记录这个node的名称与 在nodes中的位置
-          this.setNods(this.translation(obj.target_name));
+          this.setNods(this.translation(obj.target_name),obj.target_img);
           this.setLinks(this.translation(obj.source_name),this.translation(obj.target_name))
 
         }
@@ -177,19 +156,20 @@
       },
       onmessage(e){
 
-        var list = e.data;
+        var list = eval('(' + e.data + ')');
+        // console.log(list[0]);
         for (var i = 0 ; i < list.length ; i++){
           if (!!this.collectNodesName[this.translation(list[i].source_name)]){//已经存在这个原始node
             //这部分是links需要连接的那个node
               this.judgeTargetNode(list[i])
           }else {//不存在这个原始node
               this.collectNodesName[this.translation(list[i].source_name)] = this.nodes.length;//记录这个node的名称与位置
-              this.setNods(this.translation(list[i].source_name));
+              this.setNods(this.translation(list[i].source_name),list[i].source_img);
               //这部分是links需要连接的那个node
               this.judgeTargetNode(list[i])
           }
         }
-        this.updateFlag++;
+        this.dataTime=list[0].date;
         // console.log(e.data);
         // var obj = eval('(' + e.data + ')');
         // if (!!this.collectNodesName[this.translation(obj.source_name)]){//已经存在这个原始node
