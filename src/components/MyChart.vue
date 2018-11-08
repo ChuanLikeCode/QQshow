@@ -25,11 +25,12 @@
         mychart:"",
         nodes:[],
         collectNodesName:{},
-        links:[]
+        links:[],
+        updateFlag:1
       }
     },
     watch:{
-      links:function (newVal, oldVal) {
+      updateFlag:function (newVal, oldVal) {
         this.setoption();
       }
     },
@@ -137,7 +138,10 @@
         var node = {
           "name": node_name,//节点名称
           "value": 1,
-          "category": 0//与关系网类别索引对应，此处只有一个关系网所以这里写0
+          "category": 0,//与关系网类别索引对应，此处只有一个关系网所以这里写0
+          "symbol": 'image://https://gss0.bdstatic.com/-4o3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike150%2C5%2C5%2C150%2C50/sign=6b03dae80746f21fdd395601974d0005/cb8065380cd791232b140067a0345982b2b78029.jpg',
+          "symbolSize":50
+          // "symbol": 'image://../images/me.png  src/assets/a.jpg'
         };
         this.nodes.push(node);
       },
@@ -172,17 +176,31 @@
         this.sendMessage()
       },
       onmessage(e){
-        console.log(e.data);
-        var obj = eval('(' + e.data + ')');
-        if (!!this.collectNodesName[this.translation(obj.source_name)]){//已经存在这个原始node
-          //这部分是links需要连接的那个node
-            this.judgeTargetNode(obj)
-        }else {//不存在这个原始node
-            this.collectNodesName[this.translation(obj.source_name)] = this.nodes.length;//记录这个node的名称与位置
-            this.setNods(this.translation(obj.source_name));
+
+        var list = e.data;
+        for (var i = 0 ; i < list.length ; i++){
+          if (!!this.collectNodesName[this.translation(list[i].source_name)]){//已经存在这个原始node
             //这部分是links需要连接的那个node
-            this.judgeTargetNode(obj)
+              this.judgeTargetNode(list[i])
+          }else {//不存在这个原始node
+              this.collectNodesName[this.translation(list[i].source_name)] = this.nodes.length;//记录这个node的名称与位置
+              this.setNods(this.translation(list[i].source_name));
+              //这部分是links需要连接的那个node
+              this.judgeTargetNode(list[i])
+          }
         }
+        this.updateFlag++;
+        // console.log(e.data);
+        // var obj = eval('(' + e.data + ')');
+        // if (!!this.collectNodesName[this.translation(obj.source_name)]){//已经存在这个原始node
+        //   //这部分是links需要连接的那个node
+        //     this.judgeTargetNode(obj)
+        // }else {//不存在这个原始node
+        //     this.collectNodesName[this.translation(obj.source_name)] = this.nodes.length;//记录这个node的名称与位置
+        //     this.setNods(this.translation(obj.source_name));
+        //     //这部分是links需要连接的那个node
+        //     this.judgeTargetNode(obj)
+        // }
         // console.log(this.nodes)
       },
       connetWebSocket(){
