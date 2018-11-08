@@ -33,7 +33,7 @@
       }
     },
     watch:{
-      updateFlag:function (newVal, oldVal) {
+      dataTime:function (newVal, oldVal) {
         this.setoption();
       }
     },
