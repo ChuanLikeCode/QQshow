@@ -2,9 +2,6 @@
   <div>
     <div class="navbar navbar-fixed-top" style="width:100%;background-color: #001a3d; text-align:center">
       <h1 class="navbar-brand navbar-brand-name" id="show" style="color: white">一分钟看懂校园招聘企业与高校的关系</h1>
-      <!--<i class="fa fa-square-o"></i><font color="#fff">-->
-      <!--<button type="button" id="send_message" @click="sendMessage">发送 message</button>-->
-      <!--<button type="button" id="close_websocket" @click = closeConnect>关闭 websocket</button>-->
     </div>
     <div id="total_dom" :style="{width: '1300px', height: '300px',margin:'20px auto'}">
     </div>
@@ -816,6 +813,6 @@
     border-radius: 5px;
     height: 50px;
     font-size: 20px;
-    color: white;
+    color: #07b5f1;
   }
 </style>
