@@ -86,9 +86,9 @@
             animation: false,
             label: {
               normal: {
-                show:true,
                 position: 'right',
-                color: '#07b5f1'
+                color: '#07b5f1',
+                formatter: '{b}'
               }
             },
             draggable: true,
@@ -101,7 +101,7 @@
               edgeLength: 105,//连线的长度
               repulsion: 100  //子节点之间的间距
             },
-
+            roam : true,
             edges: webkitDep.links
           }]
         };
